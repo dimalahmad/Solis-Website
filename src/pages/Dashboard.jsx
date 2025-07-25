@@ -117,7 +117,7 @@ function DashboardPage({ darkMode }) {
               }).map((notif, idx) => (
                 <Paper elevation={2} key={notif.id} sx={{
                   width: '100%',
-                  maxWidth: '93%',
+                  maxWidth: { xs: '100%', md: '93%' },
                   minWidth: 0,
                   height: 120,
                   ml: { xs: 0, md: 3 },
