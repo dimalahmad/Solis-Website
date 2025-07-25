@@ -4,6 +4,8 @@
   overflow-x: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
+  overflow: auto !important;
+  overscroll-behavior: auto !important;
 }
 
 .logo {

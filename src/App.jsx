@@ -12,6 +12,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import DashboardPage from './pages/Dashboard';
 import ReportsPage from './pages/Reports';
+import ReportsDetailPage from './pages/ReportsDetail';
 import RecapPage from './pages/Recap';
 import SettingsPage from './pages/Settings';
 import './App.css';
@@ -262,6 +263,7 @@ function App() {
             <Routes>
               <Route path="/" element={<DashboardPage darkMode={darkMode} />} />
               <Route path="/laporan" element={<ReportsPage />} />
+              <Route path="/detail-laporan" element={<ReportsDetailPage />} />
               <Route path="/rekap" element={<RecapPage />} />
               <Route path="/pengaturan" element={<SettingsPage />} />
             </Routes>
