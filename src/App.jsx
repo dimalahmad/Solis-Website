@@ -83,7 +83,7 @@ function App() {
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <img src={logo} alt="SOLIS Logo" style={{ width: 56, height: 56, borderRadius: 16, boxShadow: darkMode ? '0 0 16px #60a5fa' : '0 0 8px #1E3A8A', marginBottom: 8 }} />
               <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: 1, color: darkMode ? '#fff' : '#1E3A8A', fontSize: 22, fontFamily: 'Poppins, Roboto' }}>
-                SOLIS Admin
+                SOLIS Petugas
               </Typography>
             </Box>
           </Toolbar>

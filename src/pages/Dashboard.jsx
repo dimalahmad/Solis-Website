@@ -59,13 +59,13 @@ function DashboardPage({ darkMode }) {
         <Grid container alignItems="center" spacing={2}>
           <Grid item xs={12} md={6}>
             <Typography variant="h4" fontWeight="bold" sx={{ color: darkMode ? '#fff' : '#1E3A8A', mb: 0.5 }}>
-              Dashboard Admin
+              Dashboard Petugas
             </Typography>
             <Typography variant="body1" sx={{ color: darkMode ? '#fbbf24' : '#991B1B', fontWeight: 600 }}>
-              Selamat datang di panel admin SOLIS
+              Selamat datang di panel petugas SOLIS
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' }, alignItems: 'center', gap: 2 }}>
+          <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' }, alignItems: 'center', gap: 2, ml: { md: 'auto' }}}>
             <IconButton color="inherit">
               <Badge badgeContent={unreadCount} color="error">
                 <Notifications sx={{ fontSize: 32 }} />
@@ -99,120 +99,194 @@ function DashboardPage({ darkMode }) {
           </Grid>
         </Grid>
       </Box>
+      {/* Layout utama 2 kolom 50:50, stretch tinggi penuh dan responsif */}
+      <Grid container spacing={0} sx={{ minHeight: 'calc(100vh - 120px)', width: '100%', p: 0, m: 0, display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
+        {/* Kiri: Judul dan satu card laporan besar di kiri atas */}
+        <Grid item xs={12} md={6} sx={{ flex: { md: '0 0 50%' }, maxWidth: { md: '50%' }, display: 'flex', flexDirection: 'column', height: '100%', p: 0, m: 0}}>
+          <Paper elevation={3} sx={{ p: { xs: 1, md: 2 }, height: { xs: 'auto', md: '100%' }, display: 'flex', flexDirection: 'column', bgcolor: darkMode ? '#232946' : '#fff', minWidth: 0, minHeight: 0 }}>
+            <Typography fontWeight={700} mb={2} fontSize={20} color={darkMode ? '#1E90FF' : '#1E3A8A'}>
+              Laporan Terbaru
+            </Typography>
+            <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', minHeight: 0, display: 'flex', flexDirection: 'column', gap: 2, pr: 1,}}>
 
-      {/* Statistik */}
-      <Grid container spacing={3} sx={{ mb: 2, px: { xs: 1, sm: 2, md: 4 } }}>
-        {stats.map((stat, idx) => (
-          <Grid item xs={12} sm={6} md={3} key={stat.label}>
+              {[...notifikasi.filter(n => n.unread)].sort((a, b) => {
+                // Urutkan waktu terbaru ke atas (format waktu: 'HH:MM')
+                const [ah, am] = a.waktu.split(':').map(Number);
+                const [bh, bm] = b.waktu.split(':').map(Number);
+                return (bh * 60 + bm) - (ah * 60 + am);
+              }).map((notif, idx) => (
+                <Paper elevation={2} key={notif.id} sx={{
+                  width: '100%',
+                  maxWidth: '93%',
+                  minWidth: 0,
+                  height: 120,
+                  ml: { xs: 0, md: 3 },
+                  mt: idx === 0 ? { xs: 0, md: 3 } : 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  px: 3,
+                  borderRadius: 3,
+                  background: notif.status === 'Belum Diproses'
+                    ? 'linear-gradient(90deg, #ef4444 60%, #fbbf24 100%)'
+                    : notif.status === 'Diproses'
+                    ? 'linear-gradient(90deg, #fbbf24 60%, #fde68a 100%)'
+                    : 'linear-gradient(90deg, #22c55e 60%, #4ade80 100%)',
+                  color: '#fff',
+                  boxShadow: '0 2px 16px #ef4444aa',
+                  fontSize: 15,
+                  border: '2px solid #fff2',
+                  transition: 'all 0.2s',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    boxShadow: '0 4px 24px #ef4444cc',
+                    transform: 'scale(1.03)',
+                    border: '2px solid #fff',
+                  },
+                }}>
+                  <Box>
+                    <Typography fontWeight={700} fontSize={16}>{notif.kategori}</Typography>
+                    <Typography fontSize={14}>ID: {notif.id} | {notif.user}</Typography>
+                    <Typography fontSize={13}>Waktu: {notif.waktu}</Typography>
+                    <Typography fontSize={13} fontWeight={600} color="#fff">Status: {notif.status}</Typography>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+        {/* Kanan: 6 card (4 statistik utama + 2 chart), grid 2 kolom x 3 baris, stretch penuh */}
+        <Grid item xs={12} md={6} sx={{ flex: { md: '0 0 50%' }, maxWidth: { md: '50%' }, display: 'flex', flexDirection: 'column', height: '100%', p: 0, m: 0}}>
+          <Box sx={{ flex: 1, height: { xs: 'auto', md: '100%' }, display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: 'repeat(3, 1fr)', gap: { xs: 2, md: 4 }, minWidth: 0, minHeight: 0, p: { xs: 1, md: 3 } }}>
+            {/* 4 card statistik utama */}
+            {stats.map((stat, idx) => (
+              <Paper
+                key={stat.label}
+                elevation={6}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  minWidth: 0,
+                  minHeight: 0,
+                  p: 2,
+                  borderRadius: 4,
+                  background: stat.color,
+                  color: '#fff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: `0 4px 32px ${stat.shadow}99, 0 0 16px #fff1`,
+                  border: '2px solid #fff2',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    transform: 'scale(1.04)',
+                    boxShadow: `0 8px 32px ${stat.shadow}cc, 0 0 24px #fff2`,
+                  },
+                }}
+              >
+                <Box sx={{ fontSize: 36, mb: 1 }}>{stat.icon}</Box>
+                <Typography
+                  variant="h5"
+                  fontWeight="bold"
+                  sx={{ mb: 0.5, textAlign: 'center', fontSize: 24 }}
+                >
+                  {stat.value}
+                </Typography>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ textAlign: 'center', fontWeight: 700, fontSize: 15 }}
+                >
+                  {stat.label}
+                </Typography>
+              </Paper>
+            ))}
+            {/* Card Chart: PieChart */}
             <Paper elevation={6} sx={{
-              p: { xs: 2, sm: 3 },
+              width: '100%',
+              height: '100%',
+              minWidth: 0,
+              minHeight: 0,
+              p: 2,
               borderRadius: 4,
-              background: stat.color,
-              color: '#fff',
+              background: darkMode ? '#232946' : '#fff',
+              color: darkMode ? '#fff' : '#1E3A8A',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              boxShadow: `0 4px 32px ${stat.shadow}99, 0 0 16px #fff1`,
-              minHeight: { xs: 100, sm: 120, md: 140 },
-              width: '100%',
-              position: 'relative',
-              overflow: 'hidden',
+              justifyContent: 'center',
+              boxShadow: '0 4px 32px #0001',
               border: '2px solid #fff2',
-              transition: 'all 0.2s',
-              cursor: 'pointer',
-              minWidth: 0,
-              '&:hover': {
-                boxShadow: `0 8px 32px ${stat.shadow}cc, 0 0 24px #fff2`,
-                transform: 'scale(1.04)',
-              },
             }}>
-              <Box sx={{ fontSize: { xs: 32, sm: 40, md: 48 }, mb: 1, filter: 'drop-shadow(0 0 8px #fff8)' }}>{stat.icon}</Box>
-              <Typography variant="h5" fontWeight="bold" sx={{ mb: 0.5, textShadow: '0 2px 8px #0005', letterSpacing: 1, fontSize: { xs: 20, sm: 24, md: 28 } }}>{stat.value}</Typography>
-              <Typography variant="subtitle1" sx={{ opacity: 0.95, fontWeight: 600, fontSize: { xs: 13, sm: 15, md: 16 } }}>{stat.label}</Typography>
+              <Typography fontWeight={700} mb={1} fontSize={15}>Laporan per Kategori</Typography>
+              <ResponsiveContainer width="100%" height={120}>
+                <PieChart>
+                  <Pie
+                    data={kategoriData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={35}
+                    labelLine={false}
+                    label={({ name, percent }) => `${Math.round(percent * 100)}%`}
+                  >
+                    {kategoriData.map((entry, idx) => (
+                      <Cell key={`cell-${idx}`} fill={kategoriColors[idx % kategoriColors.length]} />
+                    ))}
+                  </Pie>
+                  <Legend
+                    layout="vertical"
+                    align="right"
+                    verticalAlign="middle"
+                    iconType="circle"
+                    formatter={(value, entry) => (
+                      <span style={{ fontSize: 12 }}>{value}</span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </Paper>
-          </Grid>
-        ))}
+            {/* Card Chart: BarChart */}
+            <Paper elevation={6} sx={{
+              width: '100%',
+              height: '100%',
+              minWidth: 0,
+              minHeight: 0,
+              p: 2,
+              borderRadius: 4,
+              background: darkMode ? '#232946' : '#fff',
+              color: darkMode ? '#fff' : '#1E3A8A',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 32px #0001',
+              border: '2px solid #fff2',
+            }}>
+              <Typography fontWeight={700} mb={1} fontSize={15}>Status Laporan</Typography>
+              <ResponsiveContainer width="100%" height={120}>
+                <BarChart data={statusData} margin={{ top: 10, right: 10, bottom: 10, left: 0 }}>
+                  <XAxis dataKey="name" stroke={darkMode ? '#fff' : '#1E3A8A'} />
+                  <YAxis stroke={darkMode ? '#fff' : '#1E3A8A'} allowDecimals={false} />
+                  <Tooltip />
+                  <Legend
+                    verticalAlign="top"
+                    align="right"
+                    iconType="square"
+                    formatter={(value) => <span style={{ fontSize: 12 }}>{value}</span>}
+                  />
+                  <Bar dataKey="value">
+                    {statusData.map((entry, idx) => (
+                      <Cell key={`cell-status-${idx}`} fill={statusColors[idx % statusColors.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </Paper>
+          </Box>
+        </Grid>
       </Grid>
-
-      {/* Chart */}
-      <Grid container spacing={3} sx={{ mb: 2, px: { xs: 1, sm: 2, md: 4 } }}>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={6} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, minHeight: { xs: 180, sm: 220, md: 280 }, background: darkMode ? '#232946' : '#fff', color: darkMode ? '#fff' : '#1E3A8A', boxShadow: '0 2px 12px #0001', transition: 'all 0.2s', width: '100%', minWidth: 0 }}>
-            <Typography fontWeight={700} mb={2} fontSize={18}>Laporan per Kategori</Typography>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie data={kategoriData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label>
-                  {kategoriData.map((entry, idx) => (
-                    <Cell key={`cell-${idx}`} fill={kategoriColors[idx % kategoriColors.length]} />
-                  ))}
-                </Pie>
-                <Legend />
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={6} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 4, minHeight: { xs: 180, sm: 220, md: 280 }, background: darkMode ? '#232946' : '#fff', color: darkMode ? '#fff' : '#1E3A8A', boxShadow: '0 2px 12px #0001', transition: 'all 0.2s', width: '100%', minWidth: 0 }}>
-            <Typography fontWeight={700} mb={2} fontSize={18}>Status Laporan</Typography>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={statusData}>
-                <XAxis dataKey="name" stroke={darkMode ? '#fff' : '#1E3A8A'} />
-                <YAxis stroke={darkMode ? '#fff' : '#1E3A8A'} allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value">
-                  {statusData.map((entry, idx) => (
-                    <Cell key={`cell-status-${idx}`} fill={statusColors[idx % statusColors.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      {/* Notifikasi */}
-      <Box sx={{ px: { xs: 1, sm: 2, md: 4 }, mb: 4, overflowX: 'auto' }}>
-        <Typography fontWeight={700} mb={2} fontSize={18} color={darkMode ? '#fff' : '#1E3A8A'}>
-          Notifikasi Laporan Terbaru
-        </Typography>
-        <Grid container spacing={2} wrap="nowrap" sx={{ flexWrap: { xs: 'nowrap', sm: 'wrap' } }}>
-          {notifikasi.filter(n => n.unread).map((notif) => (
-            <Grid item xs={10} sm={6} md={4} lg={3} key={notif.id} sx={{ minWidth: { xs: 260, sm: 'auto' } }}>
-              <Paper elevation={4} sx={{
-                p: { xs: 1.5, sm: 2.5 },
-                borderRadius: 3,
-                background: notif.status === 'Belum Diproses'
-                  ? 'linear-gradient(90deg, #ef4444 60%, #fbbf24 100%)'
-                  : notif.status === 'Diproses'
-                  ? 'linear-gradient(90deg, #fbbf24 60%, #fde68a 100%)'
-                  : 'linear-gradient(90deg, #22c55e 60%, #4ade80 100%)',
-                color: '#fff',
-                boxShadow: '0 2px 16px #ef4444aa',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
-                minWidth: 0,
-                border: '2px solid #fff2',
-                transition: 'all 0.2s',
-                cursor: 'pointer',
-                fontSize: { xs: 13, sm: 15 },
-                '&:hover': {
-                  boxShadow: '0 4px 24px #ef4444cc',
-                  transform: 'scale(1.03)',
-                  border: '2px solid #fff',
-                },
-              }}>
-                <Typography fontWeight={700} fontSize={16}>{notif.kategori}</Typography>
-                <Typography fontSize={15}>ID: {notif.id} | {notif.user}</Typography>
-                <Typography fontSize={14}>Waktu: {notif.waktu}</Typography>
-                <Typography fontSize={14} fontWeight={600} color="#fff">Status: {notif.status}</Typography>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
 
       {/* Snackbar Pop-up Notifikasi */}
       <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
